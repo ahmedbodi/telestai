@@ -3,7 +3,6 @@ Jenkinsfile
 *.tar.gz
 
 *.exe
-src/telestai
 src/telestaid
 src/telestai-cli
 src/telestai-tx

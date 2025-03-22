@@ -204,6 +204,7 @@ TELESTAI_CORE_H = \
   support/events.h \
   support/lockedpool.h \
   sync.h \
+  telestai/coins.h \
   threadsafety.h \
   threadinterrupt.h \
   timedata.h \
@@ -434,6 +435,7 @@ libtelestai_common_a_SOURCES = \
   scheduler.cpp \
   script/sign.cpp \
   script/standard.cpp \
+  telestai/coins.cpp \
   warnings.cpp \
   $(TELESTAI_CORE_H)
 
