@@ -1,11 +1,10 @@
 // Copyright (c) 2012 Pieter Wuille
 // Copyright (c) 2012-2016 The Bitcoin Core developers
-// Copyright (c) 2017-2019 The Telestai Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef TELESTAI_ADDRMAN_H
-#define TELESTAI_ADDRMAN_H
+#ifndef BITCOIN_ADDRMAN_H
+#define BITCOIN_ADDRMAN_H
 
 #include "netaddress.h"
 #include "protocol.h"
@@ -521,8 +520,6 @@ public:
         return fRet;
     }
 
-    CAddrInfo* ById(unsigned long nId);
-
     //! Add multiple addresses.
     bool Add(const std::vector<CAddress> &vAddr, const CNetAddr& source, int64_t nTimePenalty = 0)
     {
@@ -603,4 +600,4 @@ public:
 
 };
 
-#endif // TELESTAI_ADDRMAN_H
+#endif // BITCOIN_ADDRMAN_H
