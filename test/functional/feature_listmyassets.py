@@ -6,10 +6,10 @@
 
 """Test listmyassets RPC command."""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_contains_pair
 
-class ListMyAssetsTest(TelestaiTestFramework):
+class ListMyAssetsTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

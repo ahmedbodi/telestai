@@ -6,13 +6,13 @@
 
 """Testing asset use cases"""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_is_hash_string, assert_does_not_contain_key, assert_raises_rpc_error, JSONRPCException, Decimal
 
 import string
 
 
-class AssetTest(TelestaiTestFramework):
+class AssetTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3

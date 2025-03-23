@@ -20,7 +20,7 @@ from collections import defaultdict
 
 # Avoid wildcard * imports if possible
 from test_framework.mininode import CInv, NetworkThread, NodeConn, NodeConnCB, mininode_lock, MsgGetdata
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, connect_nodes, p2p_port
 
 # NodeConnCB is a class containing callbacks to be executed when a P2P
@@ -58,11 +58,11 @@ def custom_function():
 
     If this function is more generally useful for other tests, consider
     moving it to a module in test_framework."""
-    # self.log.info("running custom_function")  # Oops! Can't run self.log outside the TelestaiTestFramework
+    # self.log.info("running custom_function")  # Oops! Can't run self.log outside the BitcoinTestFramework
     pass
 
-class ExampleTest(TelestaiTestFramework):
-    # Each functional test is a subclass of the TelestaiTestFramework class.
+class ExampleTest(BitcoinTestFramework):
+    # Each functional test is a subclass of the BitcoinTestFramework class.
 
     # Override the set_test_params(), add_options(), setup_chain(), setup_network()
     # and setup_nodes() methods to customize the test setup as required.
@@ -117,7 +117,7 @@ class ExampleTest(TelestaiTestFramework):
 
         Define it in a method here because you're going to use it repeatedly.
         If you think it's useful in general, consider moving it to the base
-        TelestaiTestFramework class so other tests can use it."""
+        BitcoinTestFramework class so other tests can use it."""
 
         self.log.info("Running custom_method")
 

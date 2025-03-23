@@ -17,10 +17,10 @@ disconnected.
 from decimal import Decimal
 import os
 import shutil
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, connect_nodes, disconnect_nodes, sync_blocks
 
-class ReorgsRestoreTest(TelestaiTestFramework):
+class ReorgsRestoreTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 3
 

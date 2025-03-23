@@ -6,10 +6,10 @@
 
 """Test deprecation of RPC calls."""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_raises_rpc_error
 
-class DeprecatedRpcTest(TelestaiTestFramework):
+class DeprecatedRpcTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.setup_clean_chain = True

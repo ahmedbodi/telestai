@@ -19,10 +19,10 @@ import subprocess
 import sys
 import tempfile
 import urllib
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, wait_until
 
-class LoadblockTest(TelestaiTestFramework):
+class LoadblockTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

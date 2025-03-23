@@ -13,10 +13,10 @@ Test running telestaid with -reindex and -reindex-chainstate options.
 """
 
 import time
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
-class ReindexTest(TelestaiTestFramework):
+class ReindexTest(BitcoinTestFramework):
 
     def set_test_params(self):
         self.setup_clean_chain = True

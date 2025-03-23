@@ -40,10 +40,10 @@ Test is as follows:
 
 import os
 import time
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, Decimal, wait_until, assert_raises_rpc_error
 
-class MempoolPersistTest(TelestaiTestFramework):
+class MempoolPersistTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 3
         self.extra_args = [[], ["-persistmempool=0"], []]

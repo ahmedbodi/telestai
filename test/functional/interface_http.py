@@ -8,11 +8,11 @@
 
 import http.client
 import urllib.parse
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import str_to_b64str, assert_equal
 
 # noinspection PyUnresolvedReferences
-class HTTPBasicsTest (TelestaiTestFramework):
+class HTTPBasicsTest (BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 3
 

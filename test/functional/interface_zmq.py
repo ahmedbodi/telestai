@@ -10,7 +10,7 @@
 import configparser
 import os
 import struct
-from test_framework.test_framework import TelestaiTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import assert_equal, hash256, x16_hash_block
 
 
@@ -35,7 +35,7 @@ class ZMQSubscriber:
 
 
 # noinspection PyUnresolvedReferences
-class ZMQTest(TelestaiTestFramework):
+class ZMQTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
 

@@ -6,10 +6,10 @@
 
 """Testing asset reorg use cases"""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, disconnect_all_nodes, connect_all_nodes_bi
 
-class AssetReorgTest(TelestaiTestFramework):
+class AssetReorgTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

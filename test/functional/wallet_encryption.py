@@ -7,10 +7,10 @@
 """Test Wallet encryption"""
 
 import time
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error
 
-class WalletEncryptionTest(TelestaiTestFramework):
+class WalletEncryptionTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1

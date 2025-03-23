@@ -14,10 +14,10 @@ Test the abandontransaction RPC.
  no effect on transactions which are already conflicted or abandoned.
 """
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import sync_blocks, Decimal, sync_mempools, disconnect_nodes, assert_equal, connect_nodes
 
-class AbandonConflictTest(TelestaiTestFramework):
+class AbandonConflictTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.extra_args = [["-minrelaytxfee=0.00001"], []]

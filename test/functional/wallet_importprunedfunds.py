@@ -6,10 +6,10 @@
 
 """Test the importprunedfunds and removeprunedfunds RPCs."""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error, Decimal
 
-class ImportPrunedFundsTest(TelestaiTestFramework):
+class ImportPrunedFundsTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

@@ -6,10 +6,10 @@
 
 """Test the wallet."""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import connect_nodes_bi, assert_fee_amount, assert_equal, assert_raises_rpc_error, Decimal, count_bytes, sync_mempools, sync_blocks, time, assert_array_result
 
-class WalletTest(TelestaiTestFramework):
+class WalletTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
         self.setup_clean_chain = True

@@ -62,11 +62,11 @@ work on its chain).
 
 import time
 from test_framework.mininode import NodeConn, NodeConnCB, NetworkThread, MsgBlock, MsgHeaders, CBlockHeader, mininode_lock, MsgInv, CInv
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import os, p2p_port, assert_equal, assert_raises_rpc_error, connect_nodes, sync_blocks
 from test_framework.blocktools import create_block, create_coinbase
 
-class AcceptBlockTest(TelestaiTestFramework):
+class AcceptBlockTest(BitcoinTestFramework):
     def add_options(self, parser):
         parser.add_option("--testbinary", dest="testbinary",
                           default=os.getenv("TELESTAID", "telestaid"),

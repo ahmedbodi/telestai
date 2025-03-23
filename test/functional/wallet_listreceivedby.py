@@ -6,7 +6,7 @@
 
 """Test the listreceivedbyaddress RPC."""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_array_result, Decimal
 
 def get_sub_array_from_array(object_array, to_match):
@@ -28,7 +28,7 @@ def get_sub_array_from_array(object_array, to_match):
 
 
 # noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker,PyTypeChecker
-class ReceivedByTest(TelestaiTestFramework):
+class ReceivedByTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.enable_mocktime()

@@ -6,11 +6,11 @@
 
 """Testing rewards use cases"""
 
-from test_framework.test_framework import TelestaiTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error, assert_contains, Decimal
 
 # noinspection PyAttributeOutsideInit
-class RewardsTest(TelestaiTestFramework):
+class RewardsTest(BitcoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 4
