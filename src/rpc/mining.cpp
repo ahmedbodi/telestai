@@ -65,7 +65,7 @@ UniValue GetNetworkHashPS(int lookup, int height) {
 
     // If lookup is -1, then use blocks since last difficulty change.
     if (lookup <= 0)
-        lookup = pb->nHeight % GetParams().GetConsensus().DifficultyAdjustmentInterval() + 1;
+        lookup = pb->nHeight % Params().GetConsensus().DifficultyAdjustmentInterval() + 1;
 
     // If lookup is larger than chain, then set it to chain length.
     if (lookup > pb->nHeight)
@@ -128,7 +128,7 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
     UniValue blockHashes(UniValue::VARR);
     while (nHeight < nHeightEnd)
     {
-        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(GetParams()).CreateNewBlock(coinbaseScript->reserveScript));
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript));
         if (!pblocktemplate.get())
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Couldn't create new block");
         CBlock *pblock = &pblocktemplate->block;
@@ -138,7 +138,7 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
         }
         uint256 mix_hash;
         while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetHashFull(mix_hash), pblock->nBits,
-                                                                                      GetParams().GetConsensus())) {
+                                                                                      Params().GetConsensus())) {
             if (pblock->nTime < nKAWPOWActivationTime) {
                 ++pblock->nNonce;
             } else  {
@@ -157,7 +157,7 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
         pblock->mix_hash = mix_hash;
 
         std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
-        if (!ProcessNewBlock(GetParams(), shared_pblock, true, nullptr))
+        if (!ProcessNewBlock(Params(), shared_pblock, true, nullptr))
             throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
         ++nHeight;
         blockHashes.push_back(pblock->GetHash().GetHex());
@@ -239,7 +239,7 @@ UniValue getmininginfo(const JSONRPCRequest& request)
     obj.push_back(Pair("networkhashps",    getnetworkhashps(request)));
     obj.push_back(Pair("hashespersec",     (uint64_t)nHashesPerSec));
     obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
-    obj.push_back(Pair("chain", GetParams().NetworkIDString()));
+    obj.push_back(Pair("chain", Params().NetworkIDString()));
     if (IsDeprecatedRPCEnabled("getmininginfo")) {
         obj.push_back(Pair("errors",       GetWarnings("statusbar")));
     } else {
@@ -437,7 +437,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             if (block.hashPrevBlock != pindexPrev->GetBlockHash())
                 return "inconclusive-not-best-prevblk";
             CValidationState state;
-            TestBlockValidity(state, GetParams(), block, pindexPrev, false, true);
+            TestBlockValidity(state, Params(), block, pindexPrev, false, true);
             return BIP22ValidationResult(state);
         }
 
@@ -520,7 +520,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     // If the caller is indicating segwit support, then allow CreateNewBlock()
     // to select witness transactions, after segwit activates (otherwise
     // don't).
-    bool fSupportsSegwit = GetParams().GetConsensus().nSegwitEnabled;
+    bool fSupportsSegwit = Params().GetConsensus().nSegwitEnabled;
 
     // Update block
     static CBlockIndex* pindexPrev;
@@ -559,7 +559,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             script = CScript() << OP_TRUE;
         }
 
-        pblocktemplate = BlockAssembler(GetParams()).CreateNewBlock(script, fSupportsSegwit);
+        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(script, fSupportsSegwit);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 
@@ -567,7 +567,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         pindexPrev = pindexPrevNew;
     }
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
-    const Consensus::Params& consensusParams = GetParams().GetConsensus();
+    const Consensus::Params& consensusParams = Params().GetConsensus();
 
     // Update nTime
     UpdateTime(pblock, consensusParams, pindexPrev);
@@ -742,8 +742,9 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 
 
     UniValue founderObj(UniValue::VOBJ);
-    std::string rewardAddress = GetParams().DevelopmentRewardAddress();
-    CScript rewardScriptPubKeyIn = GetParams().DevelopmentRewardScript(rewardAddress);
+    std::string rewardAddress = Params().DevelopmentRewardAddress();
+    CTxDestination destination = DecodeDestination(rewardAddress);
+    CScript rewardScriptPubKeyIn = GetScriptForDestination(destination);
 
     CTxDestination founder_addr;
     ExtractDestination(rewardScriptPubKeyIn, founder_addr);
@@ -893,7 +894,7 @@ static UniValue pprpcsb(const JSONRPCRequest& request) {
     }
 
     uint256 retMixHash;
-    if (!CheckProofOfWork(blockptr->GetHashFull(retMixHash), blockptr->nBits, GetParams().GetConsensus()))
+    if (!CheckProofOfWork(blockptr->GetHashFull(retMixHash), blockptr->nBits, Params().GetConsensus()))
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block does not solve the boundary");
 
 
@@ -920,13 +921,13 @@ static UniValue pprpcsb(const JSONRPCRequest& request) {
         LOCK(cs_main);
         BlockMap::iterator mi = mapBlockIndex.find(blockptr->hashPrevBlock);
         if (mi != mapBlockIndex.end()) {
-            UpdateUncommittedBlockStructures(*blockptr, mi->second, GetParams().GetConsensus());
+            UpdateUncommittedBlockStructures(*blockptr, mi->second, Params().GetConsensus());
         }
     }
 
     submitblock_StateCatcher sc(blockptr->GetHash());
     RegisterValidationInterface(&sc);
-    bool fAccepted = ProcessNewBlock(GetParams(), blockptr, true, nullptr);
+    bool fAccepted = ProcessNewBlock(Params(), blockptr, true, nullptr);
     UnregisterValidationInterface(&sc);
     if (fBlockPresent) {
         if (fAccepted && !sc.found) {
@@ -1002,13 +1003,13 @@ UniValue submitblock(const JSONRPCRequest& request)
         LOCK(cs_main);
         BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
         if (mi != mapBlockIndex.end()) {
-            UpdateUncommittedBlockStructures(block, mi->second, GetParams().GetConsensus());
+            UpdateUncommittedBlockStructures(block, mi->second, Params().GetConsensus());
         }
     }
 
     submitblock_StateCatcher sc(block.GetHash());
     RegisterValidationInterface(&sc);
-    bool fAccepted = ProcessNewBlock(GetParams(), blockptr, true, nullptr);
+    bool fAccepted = ProcessNewBlock(Params(), blockptr, true, nullptr);
     UnregisterValidationInterface(&sc);
     if (fBlockPresent) {
         if (fAccepted && !sc.found) {
@@ -1268,7 +1269,7 @@ UniValue setgenerate(const JSONRPCRequest& request)
             + HelpExampleRpc("setgenerate", "true, 1")
         );
 
-    if (GetParams().MineBlocksOnDemand())
+    if (Params().MineBlocksOnDemand())
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Use the generate method instead of setgenerate on this network");
 
 
@@ -1288,7 +1289,7 @@ UniValue setgenerate(const JSONRPCRequest& request)
     gArgs.SoftSetArg("-genproclimit", itostr(nGenProcLimit));
     //mapArgs["-gen"] = (fGenerate ? "1" : "0");
     //mapArgs ["-genproclimit"] = itostr(nGenProcLimit);
-    int numCores = GenerateTelestais(fGenerate, nGenProcLimit, GetParams());
+    int numCores = GenerateTelestais(fGenerate, nGenProcLimit, Params());
 
     nGenProcLimit = nGenProcLimit >= 0 ? nGenProcLimit : numCores;
     std::string msg = std::to_string(nGenProcLimit) + " of " + std::to_string(numCores);

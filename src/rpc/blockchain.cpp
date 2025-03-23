@@ -766,7 +766,7 @@ UniValue getblockdeltas(const JSONRPCRequest& request)
     if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Block not available (pruned data)");
 
-    if(!ReadBlockFromDisk(block, pblockindex, GetParams().GetConsensus()))
+    if(!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Can't read block from disk");
 
     return blockToDeltasJSON(block, pblockindex);
@@ -1001,7 +1001,7 @@ UniValue getblock(const JSONRPCRequest& request)
     if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
         throw JSONRPCError(RPC_MISC_ERROR, "Block not available (pruned data)");
 
-    if (!ReadBlockFromDisk(block, pblockindex, GetParams().GetConsensus()))
+    if (!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
         // Block not found on disk. This could be because we have the block
         // header in our index but don't have the block (for example if a
         // non-whitelisted node sends us an unrequested long chain of valid
@@ -1166,7 +1166,7 @@ UniValue pruneblockchain(const JSONRPCRequest& request)
 
     unsigned int height = (unsigned int) heightParam;
     unsigned int chainHeight = (unsigned int) chainActive.Height();
-    if (chainHeight < GetParams().PruneAfterHeight())
+    if (chainHeight < Params().PruneAfterHeight())
         throw JSONRPCError(RPC_MISC_ERROR, "Blockchain is too short for pruning.");
     else if (height > chainHeight)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Blockchain is shorter than the attempted prune height.");
@@ -1326,7 +1326,7 @@ UniValue verifychain(const JSONRPCRequest& request)
     if (!request.params[1].isNull())
         nCheckDepth = request.params[1].get_int();
 
-    return CVerifyDB().VerifyDB(GetParams(), pcoinsTip, nCheckLevel, nCheckDepth);
+    return CVerifyDB().VerifyDB(Params(), pcoinsTip, nCheckLevel, nCheckDepth);
 }
 
 /** Implementation of IsSuperMajority with better feedback */
@@ -1456,7 +1456,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     LOCK(cs_main);
 
     UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("chain", GetParams().NetworkIDString()));
+    obj.push_back(Pair("chain", Params().NetworkIDString()));
     obj.push_back(Pair("blocks",                (int)chainActive.Height()));
     obj.push_back(Pair("headers",               pindexBestHeader ? pindexBestHeader->nHeight : -1));
     obj.push_back(Pair("bestblockhash",         chainActive.Tip()->GetBlockHash().GetHex()));
@@ -1465,10 +1465,10 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
         obj.push_back(Pair("difficulty_algorithm", "DGW-180"));
     } else {
         obj.push_back(Pair("difficulty_algorithm", "BTC"));
-        obj.push_back(Pair("DGW_activation_height",    (int) GetParams().DGWActivationBlock()));
+        obj.push_back(Pair("DGW_activation_height",    (int) Params().DGWActivationBlock()));
     }
     obj.push_back(Pair("mediantime",            (int64_t)chainActive.Tip()->GetMedianTimePast()));
-    obj.push_back(Pair("verificationprogress",  GuessVerificationProgress(GetParams().TxData(), chainActive.Tip())));
+    obj.push_back(Pair("verificationprogress",  GuessVerificationProgress(Params().TxData(), chainActive.Tip())));
     obj.push_back(Pair("chainwork",             chainActive.Tip()->nChainWork.GetHex()));
     obj.push_back(Pair("size_on_disk",          CalculateCurrentUsage()));
     obj.push_back(Pair("pruned",                fPruneMode));
@@ -1489,7 +1489,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
         }
     }
 
-    const Consensus::Params& consensusParams = GetParams().GetConsensus();
+    const Consensus::Params& consensusParams = Params().GetConsensus();
     //CBlockIndex* tip = chainActive.Tip();
 
     UniValue softforks(UniValue::VARR);
@@ -1693,7 +1693,7 @@ UniValue preciousblock(const JSONRPCRequest& request)
     }
 
     CValidationState state;
-    PreciousBlock(state, GetParams(), pblockindex);
+    PreciousBlock(state, Params(), pblockindex);
 
     if (!state.IsValid()) {
         throw JSONRPCError(RPC_DATABASE_ERROR, state.GetRejectReason());
@@ -1726,11 +1726,11 @@ UniValue invalidateblock(const JSONRPCRequest& request)
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
         CBlockIndex* pblockindex = mapBlockIndex[hash];
-        InvalidateBlock(state, GetParams(), pblockindex);
+        InvalidateBlock(state, Params(), pblockindex);
     }
 
     if (state.IsValid()) {
-        ActivateBestChain(state, GetParams());
+        ActivateBestChain(state, Params());
     }
 
     if (!state.IsValid()) {
@@ -1768,7 +1768,7 @@ UniValue reconsiderblock(const JSONRPCRequest& request)
     }
 
     CValidationState state;
-    ActivateBestChain(state, GetParams());
+    ActivateBestChain(state, Params());
 
     if (!state.IsValid()) {
         throw JSONRPCError(RPC_DATABASE_ERROR, state.GetRejectReason());
@@ -1801,7 +1801,7 @@ UniValue getchaintxstats(const JSONRPCRequest& request)
         );
 
     const CBlockIndex* pindex;
-    int blockcount = 30 * 24 * 60 * 60 / GetParams().GetConsensus().nPowTargetSpacing; // By default: 1 month
+    int blockcount = 30 * 24 * 60 * 60 / Params().GetConsensus().nPowTargetSpacing; // By default: 1 month
 
     bool havehash = !request.params[1].isNull();
     uint256 hash;

@@ -80,17 +80,6 @@ public:
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
     void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout);
-    void TurnOffSegwit();
-    void TurnOffCSV();
-    void TurnOffBIP34();
-    void TurnOffBIP65();
-    void TurnOffBIP66();
-    bool BIP34();
-    bool BIP65();
-    bool BIP66();
-    bool CSVEnabled() const;
-
-    CScript DevelopmentRewardScript(const std::string rewardAddress) const;
 
     /** Telestai Start **/
     const CAmount& IssueAssetBurnAmount() const { return nIssueAssetBurnAmount; }
@@ -221,27 +210,17 @@ std::unique_ptr<CChainParams> CreateChainParams(const std::string& chain);
  * Return the currently selected parameters. This won't change after app
  * startup, except for unit tests.
  */
-const CChainParams &GetParams();
+const CChainParams &Params();
 
 /**
  * Sets the params returned by Params() to those for the given BIP70 chain name.
  * @throws std::runtime_error when the chain is not supported.
  */
-void SelectParams(const std::string& chain, bool fForceBlockNetwork = false);
+void SelectParams(const std::string& chain);
 
 /**
  * Allows modifying the Version Bits regtest parameters.
  */
 void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout);
-
-void TurnOffSegwit();
-
-void TurnOffBIP34();
-
-void TurnOffBIP65();
-
-void TurnOffBIP66();
-
-void TurnOffCSV();
 
 #endif // TELESTAI_CHAINPARAMS_H

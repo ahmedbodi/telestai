@@ -666,9 +666,7 @@ BOOST_FIXTURE_TEST_SUITE(wallet_tests, WalletTestingSetup)
     BOOST_FIXTURE_TEST_CASE(ListCoins_test, ListCoinsTestingSetup)
     {
         BOOST_TEST_MESSAGE("Running ListCoins Test");
-
-        TurnOffSegwit();
-
+        
         std::string coinbaseAddress = coinbaseKey.GetPubKey().GetID().ToString();
         LOCK2(cs_main, wallet->cs_wallet);
 

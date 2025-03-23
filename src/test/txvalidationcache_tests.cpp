@@ -165,12 +165,6 @@ BOOST_AUTO_TEST_SUITE(tx_validationcache_tests)
 
         BOOST_TEST_MESSAGE("Running CheckInputs Test");
 
-        TurnOffSegwit();
-        TurnOffCSV();
-        TurnOffBIP34();
-        TurnOffBIP65();
-        TurnOffBIP66();
-
         // Test that passing CheckInputs with one set of script flags doesn't imply
         // that we would pass again with a different set of flags.
         InitScriptExecutionCache();

@@ -182,7 +182,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     developmentSubsidy = blockSubsidy * 0.25;
     coinbaseSubsidy = blockSubsidy - developmentSubsidy;
 
-    rewardScriptPubKeyIn = chainparams.DevelopmentRewardScript(rewardAddress);
+    CTxDestination destination = DecodeDestination(rewardAddress);
+    rewardScriptPubKeyIn = GetScriptForDestination(destination);
 
     // Create coinbase transaction 
     CMutableTransaction coinbaseTx; 
@@ -627,7 +628,7 @@ void static TelestaiMiner(const CChainParams& chainparams)
 
 
 
-            std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(GetParams()).CreateNewBlock(coinbaseScript->reserveScript));
+            std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript));
 
             if (!pblocktemplate.get())
             {

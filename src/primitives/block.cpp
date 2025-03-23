@@ -144,7 +144,7 @@ std::string CBlock::ToString() const
 //    return HashTestGost512(BEGIN(nVersion), END(nNonce), hashPrevBlock);
 //}
 
-//CBlock block = GetParams().GenesisBlock();
+//CBlock block = Params().GenesisBlock();
 //int64_t nStart = GetTimeMillis();
 //LogPrintf("Starting Tiger %dms\n", nStart);
 //block.TestTiger();

@@ -179,11 +179,6 @@ BOOST_FIXTURE_TEST_SUITE(miner_tests, TestingSetup)
         // Note that by default, these tests run with size accounting enabled.
         auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
         CChainParams &chainparams = *chainParams;
-        chainparams.TurnOffSegwit();
-        chainparams.TurnOffCSV();
-        chainparams.TurnOffBIP34();
-        chainparams.TurnOffBIP65();
-        chainparams.TurnOffBIP66();
         CScript scriptPubKey = CScript()
                 << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f")
                 << OP_CHECKSIG;

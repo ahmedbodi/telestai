@@ -10,16 +10,10 @@
 #include "tinyformat.h"
 #include "util.h"
 #include "utilstrencodings.h"
-#include "arith_uint256.h"
-#include "base58.h"
 
 #include <assert.h>
+
 #include "chainparamsseeds.h"
-
-//TODO: Take these out
-extern double algoHashTotal[16];
-extern int algoHashHits[16];
-
 
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
@@ -66,42 +60,6 @@ void CChainParams::UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64
     consensus.vDeployments[d].nTimeout = nTimeout;
 }
 
-void CChainParams::TurnOffSegwit() {
-	consensus.nSegwitEnabled = false;
-}
-
-void CChainParams::TurnOffCSV() {
-	consensus.nCSVEnabled = false;
-}
-
-void CChainParams::TurnOffBIP34() {
-	consensus.nBIP34Enabled = false;
-}
-
-void CChainParams::TurnOffBIP65() {
-	consensus.nBIP65Enabled = false;
-}
-
-void CChainParams::TurnOffBIP66() {
-	consensus.nBIP66Enabled = false;
-}
-
-bool CChainParams::BIP34() {
-	return consensus.nBIP34Enabled;
-}
-
-bool CChainParams::BIP65() {
-	return consensus.nBIP34Enabled;
-}
-
-bool CChainParams::BIP66() {
-	return consensus.nBIP34Enabled;
-}
-
-bool CChainParams::CSVEnabled() const{
-	return consensus.nCSVEnabled;
-}
-
 /**
  * Main network
  */
@@ -110,7 +68,7 @@ bool CChainParams::CSVEnabled() const{
  * + Is surrounded by blocks with reasonable timestamps
  *   (no blocks before with a timestamp after, none after with
  *    timestamp before)
- * + Contains no strange information/transactions
+ * + Contains no strange transactions
  */
 
 class CMainParams : public CChainParams {
@@ -275,7 +233,7 @@ public:
 };
 
 /**
- * Testnet (v7)
+ * Testnet (v3)
  */
 class CTestNetParams : public CChainParams {
 public:
@@ -342,57 +300,8 @@ public:
 
         uint32_t nGenesisTime = 1537466400;  // Thursday, September 20, 2018 12:00:00 PM GMT-06:00
 
-//        This is used inorder to mine the genesis block. Once found, we can use the nonce and block hash found to create a valid genesis block
-//        /////////////////////////////////////////////////////////////////
-//
-//        arith_uint256 test;
-//        bool fNegative;
-//        bool fOverflow;
-//        test.SetCompact(0x1e00ffff, &fNegative, &fOverflow);
-//        std::cout << "Test threshold: " << test.GetHex() << "\n\n";
-//
-//        int genesisNonce = 0;
-//        uint256 TempHashHolding = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-//        uint256 BestBlockHash = uint256S("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-//        
-//        while (test < UintToArith256(BestBlockHash)) {
-//            genesis = CreateGenesisBlock(nGenesisTime, genesisNonce, 0x1e00ffff, 4, 468 * COIN);
-//            
-//            // genesis.hashPrevBlock = TempHashHolding;
-//            // Depending on when the timestamp is on the genesis block. You will need to use GetX16RHash or GetX16RV2Hash. Replace GetHash() with these below
-//            consensus.hashGenesisBlock = genesis.GetX16RHash();
-//
-//            if (UintToArith256(consensus.hashGenesisBlock) < UintToArith256(BestBlockHash)) {
-//                BestBlockHash = consensus.hashGenesisBlock;
-//                std::cout << BestBlockHash.GetHex() << " Nonce: " << genesisNonce << "\n";
-//                std::cout << "   PrevBlockHash: " << genesis.hashPrevBlock.GetHex() << "\n";
-//            }
-//
-//            TempHashHolding = consensus.hashGenesisBlock;
-//            genesisNonce = genesisNonce + 1;
-//        }
-//
-//        genesisNonce = genesisNonce - 1;
-//
-//        std::cout << "\n";
-//        std::cout << "\n";
-//        std::cout << "\n";
-//
-//        std::cout << "hashGenesisBlock to 0x" << BestBlockHash.GetHex() << std::endl;
-//        std::cout << "Genesis Nonce to " << genesisNonce << std::endl;
-//        std::cout << "Genesis Merkle " << genesis.hashMerkleRoot.GetHex() << std::endl;
-//
-//        return;
-//
-//        /////////////////////////////////////////////////////////////////
-
         genesis = CreateGenesisBlock(nGenesisTime, 15615880, 0x1e00ffff, 2, 468 * COIN);
         consensus.hashGenesisBlock = genesis.GetX16RHash();
-
-        //Test MerkleRoot and GenesisBlock
-        // assert(consensus.hashGenesisBlock == uint256S("0x000000ecfc5e6324a079542221d00e10362bdc894d56500c414060eea8a3ad5a"));
-        // assert(genesis.hashMerkleRoot == uint256S("28ff00a867739a352523808d301f504bc4547699398d70faf2266a8bae5f3516"));
-
         vFixedSeeds.clear();
         vSeeds.clear();
 
@@ -536,54 +445,8 @@ public:
         nDefaultPort = 18444;
         nPruneAfterHeight = 1000;
 
-//        This is used inorder to mine the genesis block. Once found, we can use the nonce and block hash found to create a valid genesis block
-//        /////////////////////////////////////////////////////////////////
-//
-//        arith_uint256 test;
-//        bool fNegative;
-//        bool fOverflow;
-//        test.SetCompact(0x207fffff, &fNegative, &fOverflow);
-//        std::cout << "Test threshold: " << test.GetHex() << "\n\n";
-//
-//        int genesisNonce = 0;
-//        uint256 TempHashHolding = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-//        uint256 BestBlockHash = uint256S("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-//        
-//        while (test < UintToArith256(BestBlockHash)) {
-//            genesis = CreateGenesisBlock(nGenesisTime, genesisNonce, 0x207fffff, 1, 468 * COIN);
-//            
-//            // genesis.hashPrevBlock = TempHashHolding;
-//            // Depending on when the timestamp is on the genesis block. You will need to use GetX16RHash or GetX16RV2Hash. Replace GetHash() with these below
-//            consensus.hashGenesisBlock = genesis.GetX16RV2Hash();
-//
-//            if (UintToArith256(consensus.hashGenesisBlock) < UintToArith256(BestBlockHash)) {
-//                BestBlockHash = consensus.hashGenesisBlock;
-//                std::cout << BestBlockHash.GetHex() << " Nonce: " << genesisNonce << "\n";
-//                std::cout << "   PrevBlockHash: " << genesis.hashPrevBlock.GetHex() << "\n";
-//            }
-//
-//            TempHashHolding = consensus.hashGenesisBlock;
-//            genesisNonce = genesisNonce + 1;
-//        }
-//
-//        genesisNonce = genesisNonce - 1;
-//
-//        std::cout << "\n";
-//        std::cout << "\n";
-//        std::cout << "\n";
-//
-//        std::cout << "hashGenesisBlock to 0x" << BestBlockHash.GetHex() << std::endl;
-//        std::cout << "Genesis Nonce to " << genesisNonce << std::endl;
-//        std::cout << "Genesis Merkle " << genesis.hashMerkleRoot.GetHex() << std::endl;
-//
-//        return;
-//        /////////////////////////////////////////////////////////////////
-
         genesis = CreateGenesisBlock(1524179366, 1, 0x207fffff, 4, 468 * COIN);
         consensus.hashGenesisBlock = genesis.GetX16RHash();
-
-        // assert(consensus.hashGenesisBlock == uint256S("0x0b2c703dc93bb63a36c4e33b85be4855ddbca2ac951a7a0a29b8de0408200a3c "));
-        // assert(genesis.hashMerkleRoot == uint256S("0x28ff00a867739a352523808d301f504bc4547699398d70faf2266a8bae5f3516"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -662,7 +525,7 @@ public:
 
 static std::unique_ptr<CChainParams> globalChainParams;
 
-const CChainParams &GetParams() {
+const CChainParams &Params() {
     assert(globalChainParams);
     return *globalChainParams;
 }
@@ -678,42 +541,13 @@ std::unique_ptr<CChainParams> CreateChainParams(const std::string& chain)
     throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
 }
 
-CScript CChainParams::DevelopmentRewardScript(const std::string rewardAddress) const {
-    CTxDestination destination = DecodeDestination(rewardAddress);
-    CScript script = GetScriptForDestination(destination);
-    return script;
-}
-
-void SelectParams(const std::string& network, bool fForceBlockNetwork)
+void SelectParams(const std::string& network)
 {
     SelectBaseParams(network);
-    if (fForceBlockNetwork) {
-        bNetwork.SetNetwork(network);
-    }
     globalChainParams = CreateChainParams(network);
 }
 
 void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
 {
     globalChainParams->UpdateVersionBitsParameters(d, nStartTime, nTimeout);
-}
-
-void TurnOffSegwit(){
-	globalChainParams->TurnOffSegwit();
-}
-
-void TurnOffCSV() {
-	globalChainParams->TurnOffCSV();
-}
-
-void TurnOffBIP34() {
-	globalChainParams->TurnOffBIP34();
-}
-
-void TurnOffBIP65() {
-	globalChainParams->TurnOffBIP65();
-}
-
-void TurnOffBIP66() {
-	globalChainParams->TurnOffBIP66();
 }
