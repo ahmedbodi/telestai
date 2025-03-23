@@ -62,9 +62,9 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry, 
                     in.pushKV("value", ValueFromAmount(spentInfo.satoshis));
                     in.pushKV("valueSat", spentInfo.satoshis);
                     if (spentInfo.addressType == 1) {
-                        in.pushKV("address", CTelestaiAddress(CKeyID(spentInfo.addressHash)).ToString());
+                        in.pushKV("address", CBitcoinAddress(CKeyID(spentInfo.addressHash)).ToString());
                     } else if (spentInfo.addressType == 2) {
-                        in.pushKV("address", CTelestaiAddress(CScriptID(spentInfo.addressHash)).ToString());
+                        in.pushKV("address", CBitcoinAddress(CScriptID(spentInfo.addressHash)).ToString());
                     }
                 }
                 newVin.push_back(in);
@@ -1890,7 +1890,7 @@ UniValue signrawtransaction(const JSONRPCRequest& request)
         UniValue keys = request.params[2].get_array();
         for (unsigned int idx = 0; idx < keys.size(); idx++) {
             UniValue k = keys[idx];
-            CTelestaiSecret vchSecret;
+            CBitcoinSecret vchSecret;
             bool fGood = vchSecret.SetString(k.get_str());
             if (!fGood)
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");

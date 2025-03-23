@@ -1,5 +1,4 @@
 // Copyright (c) 2014-2016 The Bitcoin Core developers
-// Copyright (c) 2017-2019 The Telestai Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -137,7 +136,7 @@ bool DecodeBase58Check(const char* psz, std::vector<unsigned char>& vchRet)
     }
     // re-calculate the checksum, ensure it matches the included 4-byte checksum
     uint256 hash = Hash(vchRet.begin(), vchRet.end() - 4);
-    if (memcmp(&hash, &vchRet[vchRet.size() - 4], 4) != 0) {
+    if (memcmp(&hash, &vchRet.end()[-4], 4) != 0) {
         vchRet.clear();
         return false;
     }
@@ -213,14 +212,13 @@ int CBase58Data::CompareTo(const CBase58Data& b58) const
 
 namespace
 {
-
-class CTelestaiAddressVisitor : public boost::static_visitor<bool>
+class CBitcoinAddressVisitor : public boost::static_visitor<bool>
 {
 private:
-    CTelestaiAddress* addr;
+    CBitcoinAddress* addr;
 
 public:
-    explicit CTelestaiAddressVisitor(CTelestaiAddress* addrIn) : addr(addrIn) {}
+    CBitcoinAddressVisitor(CBitcoinAddress* addrIn) : addr(addrIn) {}
 
     bool operator()(const CKeyID& id) const { return addr->Set(id); }
     bool operator()(const CScriptID& id) const { return addr->Set(id); }
@@ -229,38 +227,37 @@ public:
 
 } // namespace
 
-bool CTelestaiAddress::Set(const CKeyID& id)
+bool CBitcoinAddress::Set(const CKeyID& id)
 {
     SetData(Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS), &id, 20);
     return true;
 }
 
-bool CTelestaiAddress::Set(const CScriptID& id)
+bool CBitcoinAddress::Set(const CScriptID& id)
 {
     SetData(Params().Base58Prefix(CChainParams::SCRIPT_ADDRESS), &id, 20);
     return true;
 }
 
-bool CTelestaiAddress::Set(const CTxDestination& dest)
+bool CBitcoinAddress::Set(const CTxDestination& dest)
 {
-    return boost::apply_visitor(CTelestaiAddressVisitor(this), dest);
+    return boost::apply_visitor(CBitcoinAddressVisitor(this), dest);
 }
 
-bool CTelestaiAddress::IsValid() const
+bool CBitcoinAddress::IsValid() const
 {
     return IsValid(Params());
 }
 
-bool CTelestaiAddress::IsValid(const CChainParams& params) const
+bool CBitcoinAddress::IsValid(const CChainParams& params) const
 {
     bool fCorrectSize = vchData.size() == 20;
     bool fKnownVersion = vchVersion == params.Base58Prefix(CChainParams::PUBKEY_ADDRESS) ||
                          vchVersion == params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
-
     return fCorrectSize && fKnownVersion;
 }
 
-CTxDestination CTelestaiAddress::Get() const
+CTxDestination CBitcoinAddress::Get() const
 {
     if (!IsValid())
         return CNoDestination();
@@ -274,7 +271,7 @@ CTxDestination CTelestaiAddress::Get() const
         return CNoDestination();
 }
 
-bool CTelestaiAddress::GetIndexKey(uint160& hashBytes, int& type) const
+bool CBitcoinAddress::GetIndexKey(uint160& hashBytes, int& type) const
 {
     if (!IsValid()) {
         return false;
@@ -290,8 +287,22 @@ bool CTelestaiAddress::GetIndexKey(uint160& hashBytes, int& type) const
 
     return false;
 }
+bool CBitcoinAddress::GetKeyID(CKeyID& keyID) const
+{
+    if (!IsValid() || vchVersion != Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS))
+        return false;
+    uint160 id;
+    memcpy(&id, vchData.data(), 20);
+    keyID = CKeyID(id);
+    return true;
+}
 
-void CTelestaiSecret::SetKey(const CKey& vchSecret)
+bool CBitcoinAddress::IsScript() const
+{
+    return IsValid() && vchVersion == Params().Base58Prefix(CChainParams::SCRIPT_ADDRESS);
+}
+
+void CBitcoinSecret::SetKey(const CKey& vchSecret)
 {
     assert(vchSecret.IsValid());
     SetData(Params().Base58Prefix(CChainParams::SECRET_KEY), vchSecret.begin(), vchSecret.size());
@@ -299,7 +310,7 @@ void CTelestaiSecret::SetKey(const CKey& vchSecret)
         vchData.push_back(1);
 }
 
-CKey CTelestaiSecret::GetKey()
+CKey CBitcoinSecret::GetKey()
 {
     CKey ret;
     assert(vchData.size() >= 32);
@@ -307,42 +318,43 @@ CKey CTelestaiSecret::GetKey()
     return ret;
 }
 
-bool CTelestaiSecret::IsValid() const
+bool CBitcoinSecret::IsValid() const
 {
-        bool fExpectedFormat = vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1);
-        bool fCorrectVersion = vchVersion == Params().Base58Prefix(CChainParams::SECRET_KEY);
-
-        return fExpectedFormat && fCorrectVersion;
+    bool fExpectedFormat = vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1);
+    bool fCorrectVersion = vchVersion == Params().Base58Prefix(CChainParams::SECRET_KEY);
+    return fExpectedFormat && fCorrectVersion;
 }
 
-bool CTelestaiSecret::SetString(const char* pszSecret)
+bool CBitcoinSecret::SetString(const char* pszSecret)
 {
     return CBase58Data::SetString(pszSecret) && IsValid();
 }
 
-bool CTelestaiSecret::SetString(const std::string& strSecret)
+bool CBitcoinSecret::SetString(const std::string& strSecret)
 {
     return SetString(strSecret.c_str());
 }
 
+
 std::string EncodeDestination(const CTxDestination& dest)
 {
-    CTelestaiAddress addr(dest);
+    CBitcoinAddress addr(dest);
     if (!addr.IsValid()) return "";
     return addr.ToString();
 }
 
 CTxDestination DecodeDestination(const std::string& str)
 {
-    return CTelestaiAddress(str).Get();
+    return CBitcoinAddress(str).Get();
 }
 
 bool IsValidDestinationString(const std::string& str, const CChainParams& params)
 {
-    return CTelestaiAddress(str).IsValid(params);
+    return CBitcoinAddress(str).IsValid(params);
 }
 
 bool IsValidDestinationString(const std::string& str)
 {
-    return CTelestaiAddress(str).IsValid();
+    return CBitcoinAddress(str).IsValid();
 }
+
